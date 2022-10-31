@@ -24,3 +24,38 @@ optional arguments:
   -t TEMPLATE_FILE, --template_file TEMPLATE_FILE
                         The file to use as the template for templated formats.
 ```
+
+## Specification Format
+
+The `ansible-specdoc` specification format requires that each module exports a `specdoc_meta` dict with the following structure:
+
+```python
+specdoc_meta = dict(
+    description=['Module Description'],
+    requirements=['python >= 3.6'],
+    author=['Author Name'],
+    spec=module_spec,
+    examples=[
+        'example module usage'
+    ],
+    return_values=dict(
+        my_return_value=dict(
+            description='A generic return value.',
+            type='str',
+            sample=['sample response']
+        ),
+    )
+)
+```
+
+The `spec` field of the `specdoc_meta` struct should refer to an
+[Ansible argument spec](https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#argument-spec).
+This fields in this spec may contain an additional `description` field that will appear in the documentation.
+
+For example:
+
+```python
+module_spec = dict(
+    example_argument=dict(type='str', required=True, description='An example argument.')
+)
+```

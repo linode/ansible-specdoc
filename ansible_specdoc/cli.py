@@ -85,17 +85,15 @@ class SpecDocModule:
             param_dict = {
                 'type': param.get('type'),
                 'required': param.get('required') or False,
+                'editable': param.get('editable') or False,
                 'description': [desc] if isinstance(desc, str) else desc
             }
 
-            if 'choices' in param:
-                param_dict['choices'] = param.get('choices')
+            for field in ['choices', 'default', 'elements']:
+                if field not in param:
+                    continue
 
-            if 'default' in param:
-                param_dict['default'] = param.get('default')
-
-            if 'elements' in param:
-                param_dict['elements'] = param.get('elements')
+                param_dict[field] = param.get(field)
 
             if 'options' in param:
                 param_dict['suboptions'] = SpecDocModule.__spec_to_doc(param.get('options'))
