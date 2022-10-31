@@ -5,7 +5,7 @@ A utility for dynamically generating documentation from an Ansible module's spec
 ## Usage
 
 ```sh
-usage: ansible-specdoc [-h] [-s] [-n MODULE_NAME] [-i INPUT_FILE] [-o OUTPUT_FILE] [-f {yaml,json,jinja2}] [-j] [-t TEMPLATE_FILE]
+ansible-specdoc [-h] [-s] [-n MODULE_NAME] [-i INPUT_FILE] [-o OUTPUT_FILE] [-f {yaml,json,jinja2}] [-j] [-t TEMPLATE_FILE]
 
 Generate Ansible Module documentation from spec.
 
@@ -49,8 +49,9 @@ specdoc_meta = dict(
 ```
 
 The `spec` field of the `specdoc_meta` struct should refer to an
-[Ansible argument spec](https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#argument-spec).
-This fields in this spec may contain an additional `description` field that will appear in the documentation.
+[Ansible argument specification](https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#argument-spec).
+
+Spec fields may contain an additional `description` field that will appear in the documentation.
 
 For example:
 
