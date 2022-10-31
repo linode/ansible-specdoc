@@ -1,6 +1,6 @@
 # ansible-specdoc
 
-A utility for dynamically generating documentation from an Ansible module's spec. This is primarily designed for the [Linode Ansible Collection]().
+A utility for dynamically generating documentation from an Ansible module's spec. This is primarily designed for the [Linode Ansible Collection](https://github.com/linode/ansible_linode).
 
 ## Usage
 
