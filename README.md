@@ -1,6 +1,6 @@
 # ansible-specdoc
 
-This is an experimental repo used to test the viability of static Ansible docs generation.
+A utility for dynamically generating documentation from an Ansible module's spec. This is primarily designed for the [Linode Ansible Collection]().
 
 ## Usage
 
