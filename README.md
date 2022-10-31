@@ -27,6 +27,7 @@ optional arguments:
 
 ## Specification Format
 
+### Module Metadata
 The `ansible-specdoc` specification format requires that each module exports a `specdoc_meta` dict with the following structure:
 
 ```python
@@ -47,6 +48,8 @@ specdoc_meta = dict(
     )
 )
 ```
+
+### Argument Specification
 
 The `spec` field of the `specdoc_meta` struct should refer to an
 [Ansible argument specification](https://docs.ansible.com/ansible/latest/dev_guide/developing_program_flow_modules.html#argument-spec).
