@@ -1,11 +1,10 @@
-import os
 import setuptools
 
 setuptools.setup(
     name="ansible-specdoc",
     version="0.0.9",
-    author="Lena Garber",
-    author_email="lbgarber2@gmail.com",
+    author="Linode",
+    author_email="dev-dx@linode.com",
     description=("A simple tool for generating Ansible collection documentation from module spec."),
     license="GNU General Public License v3.0",
     keywords="ansible",
