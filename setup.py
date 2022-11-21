@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="ansible-specdoc",
-    version="0.0.9",
+    version="0.0.10",
     author="Linode",
     author_email="dev-dx@linode.com",
     description=("A simple tool for generating Ansible collection documentation from module spec."),
