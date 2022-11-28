@@ -4,8 +4,11 @@ test:
 lint:
 	pylint ./tests ./ansible_specdoc
 
-build:
-	pip3 install -r requirements-dev.txt && python setup.py build && python -m build
+deps:
+	pip install -r requirements-dev.txt -r requirements.txt
+
+build: deps
+	python setup.py build && python -m build
 
 install: clean_dist build
 	pip3 install --force dist/*.whl
