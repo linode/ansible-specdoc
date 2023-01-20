@@ -86,6 +86,7 @@ class SpecDocModule:
                 'type': param.get('type'),
                 'required': param.get('required') or False,
                 'editable': param.get('editable') or False,
+                'conflicts_with': param.get('conflicts_with') or False,
                 'description': [desc] if isinstance(desc, str) else desc
             }
 
