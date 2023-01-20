@@ -5,7 +5,7 @@
 import json
 import os
 import unittest
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 import yaml
 from ansible_specdoc.cli import SpecDocModule, CLI
