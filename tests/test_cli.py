@@ -5,7 +5,7 @@
 import json
 import os
 import unittest
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 import yaml
 from ansible_specdoc.cli import SpecDocModule, CLI
@@ -39,9 +39,17 @@ class TestDocs(unittest.TestCase):
                 assert value.get('required') == (module_spec.get(key).get('required') or False)
                 assert value.get('description') == module_spec.get(key).get('description')
 
-                options: Optional[Dict[str, Any]] = value.get('suboptions')
+                options = value.get('suboptions')
                 if options is not None:
                     assert_spec_recursive(options, module_spec.get(key).get('options'))
+
+                editable = value.get('editable')
+                if editable:
+                    assert editable == module_spec.get(key).get('editable')
+
+                conflicts_with = value.get('conflicts_with')
+                if conflicts_with:
+                    assert conflicts_with == module_spec.get(key).get('conflicts_with')
 
         assert_spec_recursive(new_spec.get('options'), original_spec.get('spec'))
 

@@ -8,10 +8,13 @@ my_module_dict_spec = {
     'my-int': {
         'type': 'int',
         'required': True,
+        'editable': True,
+        'conflicts_with': ['my-bool'],
         'description': ['A really cool required int']
     },
     'my-bool': {
         'type': 'bool',
+        'conflicts_with': ['my-int'],
         'description': [
             'A really cool bool that does stuff',
             'Here\'s another line :)'
