@@ -9,13 +9,15 @@ import os
 import pathlib
 import sys
 from types import ModuleType
-from typing import Optional, Dict, Any
+from typing import Optional
 
 import jinja2
 import yaml
 from redbaron import RedBaron
 
-SPECDOC_META_VAR = 'specdoc_meta'
+from ansible_specdoc.objects import SpecDocMeta
+
+SPECDOC_META_VAR = 'SPECDOC_META'
 
 
 class SpecDocModule:
@@ -29,7 +31,7 @@ class SpecDocModule:
         self._module_spec: Optional[importlib.machinery.ModuleSpec] = None
         self._module: Optional[ModuleType] = None
 
-        self._metadata: Dict[str, Any] = {}
+        self._metadata: Optional[SpecDocMeta] = None
 
     def load_file(self, file: str, module_name: str = None) -> None:
         """Loads the given Ansible module file"""
@@ -45,8 +47,8 @@ class SpecDocModule:
         self._module_spec.loader.exec_module(self._module)
 
         if not hasattr(self._module, SPECDOC_META_VAR):
-            raise Exception('failed to parse module file {0}: specdoc_meta is not defined'
-                            .format(self._module_file))
+            raise Exception('failed to parse module file {0}: {1} is not defined'
+                            .format(self._module_file, SPECDOC_META_VAR))
 
         self._metadata = getattr(self._module, SPECDOC_META_VAR)
 
@@ -62,8 +64,8 @@ class SpecDocModule:
         exec(content, self._module.__dict__)
 
         if not hasattr(self._module, SPECDOC_META_VAR):
-            raise Exception('failed to parse module string {0}: specdoc_meta is not defined'
-                            .format(self._module_name))
+            raise Exception('failed to parse module string {0}: {1} is not defined'
+                            .format(self._module_name, SPECDOC_META_VAR))
 
         self._metadata = getattr(self._module, SPECDOC_META_VAR)
 
@@ -72,52 +74,11 @@ class SpecDocModule:
         print(json.loads(data))
         return json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
 
-    @staticmethod
-    def __spec_to_doc(spec: Dict[str, Dict]) -> Dict[str, Any]:
-        result = {}
-
-        for key, param in spec.items():
-            if param.get('doc_hide'):
-                continue
-
-            desc = param.get('description') or []
-
-            param_dict = {
-                'type': param.get('type'),
-                'required': param.get('required') or False,
-                'editable': param.get('editable') or False,
-                'conflicts_with': param.get('conflicts_with') or [],
-                'description': [desc] if isinstance(desc, str) else desc
-            }
-
-            for field in ['choices', 'default', 'elements']:
-                if field not in param:
-                    continue
-
-                param_dict[field] = param.get(field)
-
-            if 'options' in param:
-                param_dict['suboptions'] = SpecDocModule.__spec_to_doc(param.get('options'))
-
-            if 'suboptions' in param:
-                param_dict['suboptions'] = SpecDocModule.__spec_to_doc(param.get('suboptions'))
-
-            result[key] = param_dict
-
+    def __generate_doc_dict(self):
+        """Generates a dict for use in documentation"""
+        result = self._metadata.doc_dict
+        result['module'] = self._module_name
         return result
-
-    def __generate_doc_dict(self) -> Dict[str, Any]:
-        desc = self._metadata.get('description')
-
-        return {
-            'module': self._module_name,
-            'description': [desc] if isinstance(desc, str) else desc,
-            'requirements': self._metadata.get('requirements'),
-            'author': self._metadata.get('author'),
-            'options': self.__spec_to_doc(self._metadata.get('spec')),
-            'examples': self._metadata.get('examples') or [],
-            'return_values': self._metadata.get('return_values') or {},
-        }
 
     def generate_yaml(self) -> str:
         """Generates a YAML documentation string"""
