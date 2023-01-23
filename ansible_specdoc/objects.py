@@ -30,10 +30,9 @@ class SpecField:
     """
     A single field to be used in an Ansible module.
     """
-
-    description: List[str]
     type: FieldType
 
+    description: Optional[List[str]] = None
     required: bool = False
     default: Optional[Any] = None
     editable: bool = False
