@@ -8,14 +8,14 @@ really cool non-empty docstring
 
 MY_MODULE_DICT_SPEC = {
     'my-int': SpecField(
-        type=FieldType.Integer,
+        type=FieldType.integer,
         required=True,
         editable=True,
         conflicts_with=['my-bool'],
         description=['A really cool required int']
     ),
     'my-bool': SpecField(
-        type=FieldType.Bool,
+        type=FieldType.bool,
         conflicts_with=['my-int'],
         description=[
             'A really cool bool that does stuff',
@@ -23,7 +23,7 @@ MY_MODULE_DICT_SPEC = {
         ]
     ),
     'my-hidden-var': SpecField(
-        type=FieldType.Bool,
+        type=FieldType.bool,
         description=[
             'dont show this!!!'
         ],
@@ -33,17 +33,17 @@ MY_MODULE_DICT_SPEC = {
 
 MY_MODULE_SPEC = {
     'my-string': SpecField(
-        type=FieldType.String,
+        type=FieldType.string,
         required=True,
         description=['A really cool string that does stuff!'],
     ),
     'my-list': SpecField(
-        type=FieldType.List,
-        element_type=FieldType.String,
+        type=FieldType.list,
+        element_type=FieldType.string,
         description=['A really cool list of strings']
     ),
     'my-dict': SpecField(
-        type=FieldType.Dict,
+        type=FieldType.dict,
         suboptions=MY_MODULE_DICT_SPEC,
         description=['A really cool dict']
     )
@@ -66,8 +66,8 @@ SPECDOC_META = SpecDocMeta(
         'cool': SpecReturnValue(
             description='COOL',
             docs_url='http://localhost',
-            type=FieldType.List,
-            elements=FieldType.String,
+            type=FieldType.list,
+            elements=FieldType.string,
             sample=['["COOL"]'],
         )
     },

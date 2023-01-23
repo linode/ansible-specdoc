@@ -42,7 +42,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         'my_return_value': SpecReturnValue(
             description='A generic return value.',
-            type=FieldType.String,
+            type=FieldType.string,
             sample=['sample response']
         ),
     }
@@ -60,8 +60,8 @@ For example:
 ```python
 module_spec = {
     'example_argument': SpecField(
-        type=FieldType.String, 
-        required=True, 
+        type=FieldType.string,
+        required=True,
         description=['An example argument.']
     )
 }

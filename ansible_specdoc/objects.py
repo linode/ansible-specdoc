@@ -11,18 +11,18 @@ class FieldType:
     Enum for Ansible-compatible field types.
     """
 
-    List = 'list'
-    Dict = 'dict'
-    Bool = 'bool'
-    Integer = 'int'
-    String = 'str'
-    Float = 'float'
-    Path = 'path'
-    Raw = 'raw'
-    JSONArg = 'jsonarg'
-    Json = 'json'
-    Bytes = 'bytes'
-    Bits = 'bits'
+    list = 'list'
+    dict = 'dict'
+    bool = 'bool'
+    integer = 'int'
+    string = 'str'
+    float = 'float'
+    path = 'path'
+    raw = 'raw'
+    json_arg = 'jsonarg'
+    json = 'json'
+    bytes = 'bytes'
+    bits = 'bits'
 
 
 @dataclass
