@@ -1,62 +1,75 @@
 """Module for testing docs generation functionality"""
 
+from ansible_specdoc.objects import SpecDocMeta, SpecField, FieldType, SpecReturnValue
+
 DOCUMENTATION = '''
 really cool non-empty docstring
 '''
 
-my_module_dict_spec = {
-    'my-int': {
-        'type': 'int',
-        'required': True,
-        'editable': True,
-        'conflicts_with': ['my-bool'],
-        'description': ['A really cool required int']
-    },
-    'my-bool': {
-        'type': 'bool',
-        'conflicts_with': ['my-int'],
-        'description': [
+MY_MODULE_DICT_SPEC = {
+    'my-int': SpecField(
+        type=FieldType.integer,
+        required=True,
+        editable=True,
+        conflicts_with=['my-bool'],
+        description=['A really cool required int']
+    ),
+    'my-bool': SpecField(
+        type=FieldType.bool,
+        conflicts_with=['my-int'],
+        description=[
             'A really cool bool that does stuff',
             'Here\'s another line :)'
         ]
-    },
-    'my-hidden-var': {
-        'type': 'bool',
-        'description': [
+    ),
+    'my-hidden-var': SpecField(
+        type=FieldType.bool,
+        description=[
             'dont show this!!!'
         ],
-        'doc_hide': True
-    }
+        doc_hide=True
+    )
 }
 
-my_module_spec = {
-    'my-string': {
-        'type': 'str',
-        'required': True,
-        'description': ['A really cool string that does stuff!']
-    },
-    'my-list': {
-        'type': 'list',
-        'elements': 'str',
-        'description': ['A really cool list of strings']
-    },
-    'my-dict': {
-        'type': 'dict',
-        'options': my_module_dict_spec,
-        'description': ['A really cool dict']
-    },
-
+MY_MODULE_SPEC = {
+    'my-string': SpecField(
+        type=FieldType.string,
+        required=True,
+        description=['A really cool string that does stuff!'],
+    ),
+    'my-list': SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=['A really cool list of strings']
+    ),
+    'my-dict': SpecField(
+        type=FieldType.dict,
+        suboptions=MY_MODULE_DICT_SPEC,
+        description=['A really cool dict']
+    )
 }
 
-specdoc_meta = {
-    'description': [
+SPECDOC_META = SpecDocMeta(
+    description=[
         'My really cool Ansible module!'
     ],
-    'requirements': [
+    requirements=[
         'python >= 3.8'
     ],
-    'author': [
+    author=[
         'Lena Garber'
     ],
-    'spec': my_module_spec
-}
+    examples=[
+        'blah'
+    ],
+    return_values={
+        'cool': SpecReturnValue(
+            description='COOL',
+            docs_url='http://localhost',
+            type=FieldType.list,
+            elements=FieldType.string,
+            sample=['["COOL"]'],
+        )
+    },
+    options=MY_MODULE_SPEC
+)
