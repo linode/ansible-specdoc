@@ -129,7 +129,8 @@ class SpecDocModule:
     def generate_jinja2(self, tmpl_str: str) -> str:
         """Generates a text output from the given Jinja2 template"""
         env = jinja2.Environment(
-            trim_blocks=True
+            trim_blocks=True,
+            lstrip_blocks=True
         )
 
         template = env.from_string(tmpl_str)
