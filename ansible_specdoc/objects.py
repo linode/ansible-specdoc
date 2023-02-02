@@ -38,7 +38,7 @@ class SpecField:
     editable: bool = False
     conflicts_with: Optional[List[str]] = field(default_factory=lambda: [])
     no_log: bool = False
-    choices: Optional[List[str]] = None
+    choices: Optional[List[Any]] = None
     doc_hide: bool = False
     aliases: Optional[List[str]] = None
 
