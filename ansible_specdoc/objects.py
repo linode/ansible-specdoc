@@ -1,7 +1,7 @@
 """
 This module contains various classes to be used in Ansible modules.
 """
-
+import copy
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 
@@ -55,7 +55,7 @@ class SpecField:
         Returns the docs dict for this field.
         """
 
-        result = self.__dict__
+        result = copy.deepcopy(self.__dict__)
         if self.suboptions is not None:
             result['suboptions'] = {
                 k: v.doc_dict for k, v in self.suboptions.items() if not v.doc_hide
