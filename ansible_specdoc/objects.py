@@ -3,7 +3,7 @@ This module contains various classes to be used in Ansible modules.
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 
 class FieldType:
@@ -32,6 +32,7 @@ class SpecField:
     """
     type: FieldType
 
+    version_added: Optional[str] = None
     description: Optional[List[str]] = None
     required: bool = False
     default: Optional[Any] = None
@@ -48,6 +49,40 @@ class SpecField:
 
     # Additional fields to pass into the output Ansible spec dict
     additional_fields: Optional[Dict[str, Any]] = None
+
+    @property
+    def ansible_doc_dict(self) -> Optional[Dict[str, Any]]:
+        """
+        Returns the Ansible-compatible docs dict for this field.
+        """
+
+        result = {
+            'type': self.type,
+            'required': self.required,
+        }
+
+        if self.description is not None:
+            result['description'] = self.description
+
+        if self.default is not None:
+            result['default'] = self.default
+
+        if self.choices is not None:
+            result['choices'] = self.choices
+
+        if self.element_type is not None:
+            result['elements'] = self.element_type
+
+        if self.aliases is not None:
+            result['aliases'] = self.aliases
+
+        if self.version_added is not None:
+            result['version_added'] = self.version_added
+
+        if self.suboptions is not None:
+            result['suboptions'] = {k: v.ansible_doc_dict for k, v in self.suboptions.items()}
+
+        return result
 
     @property
     def doc_dict(self) -> Optional[Dict[str, Any]]:
@@ -104,9 +139,48 @@ class SpecReturnValue:
     description: str
     type: FieldType
 
+    returned: str = 'always'
+    version_added: Optional[str] = None
     sample: List[str] = field(default_factory=lambda: [])
+    contains: Optional[Dict[str, 'SpecReturnValue']] = None
     docs_url: Optional[str] = None
     elements: Optional[FieldType] = None
+
+    @property
+    def doc_dict(self) -> Dict[str, Any]:
+        """
+        Returns a documentation dict for a return value.
+        """
+        result = self.__dict__
+
+        if self.contains is not None:
+            result['contains'] = {k: v.doc_dict for k, v in self.contains.items()}
+
+        return result
+
+    @property
+    def ansible_doc(self) -> Dict[str, Any]:
+        """
+        Returns an Ansible-compatible documentation dict for a return value.
+        """
+        result = {
+            'description': self.description,
+            'type': str(self.type),
+            'returned': self.returned,
+            'sample': self.sample
+        }
+
+        if self.elements is not None:
+            result['elements'] = self.elements
+
+        if self.contains is not None:
+            result['contains'] = {k: v.ansible_doc for k, v in self.contains.items()}
+
+        if self.version_added is not None:
+            result['version_added'] = self.version_added
+
+        return result
+
 
 @dataclass
 class SpecDocMeta:
@@ -116,10 +190,14 @@ class SpecDocMeta:
     description: List[str]
     options: Dict[str, SpecField]
 
+    deprecated: bool = False
+    version_added: Optional[str] = None
+    short_description: Optional[str] = None
     requirements: Optional[List[str]] = None
     author: Optional[List[str]] = None
     examples: Optional[List[str]] = field(default_factory=lambda: [])
     return_values: Optional[Dict[str, SpecReturnValue]] = field(default_factory=lambda: {})
+    notes: Optional[List[str]] = field(default_factory=lambda: [])
 
     @property
     def doc_dict(self) -> Dict[str, Any]:
@@ -134,9 +212,34 @@ class SpecDocMeta:
         result['options'] = {k: v.doc_dict for k, v in self.options.items() if not v.doc_hide}
 
         if self.return_values is not None:
-            result['return_values'] = {k: v.__dict__ for k, v in self.return_values.items()}
+            result['return_values'] = {k: v.doc_dict for k, v in self.return_values.items()}
 
         return result
+
+    @property
+    def ansible_doc(self) -> Tuple[Dict[str, Any], Dict[str, Any], List]:
+        """
+        Returns the Ansible-compatible documentation dicts for this module.
+        """
+
+        documentation = {
+            'description': self.description,
+            'short_description': self.short_description if self.short_description is not None else self.description,
+            'author': self.author,
+            'deprecated': self.deprecated,
+            'requirements': self.requirements,
+            'notes': self.notes,
+            'options': {k: v.ansible_doc_dict for k, v in self.options.items() if not v.doc_hide}
+        }
+
+        if self.version_added is not None:
+            documentation['version_added'] = self.version_added
+
+        return_values = {k: v.ansible_doc for k, v in self.return_values.items()}
+
+        examples = self.examples
+
+        return documentation, return_values, examples
 
     @property
     def ansible_spec(self) -> Dict[str, Any]:
