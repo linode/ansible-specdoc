@@ -6,6 +6,13 @@ DOCUMENTATION = '''
 really cool non-empty docstring
 '''
 
+RETURN = '''
+really cool non-empty return string
+'''
+
+EXAMPLES = '''
+really cool non-empty examples'''
+
 MY_MODULE_DICT_SPEC = {
     'my-int': SpecField(
         type=FieldType.integer,

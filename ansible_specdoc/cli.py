@@ -9,7 +9,7 @@ import os
 import pathlib
 import sys
 from types import ModuleType
-from typing import Optional
+from typing import Optional, Tuple
 
 import jinja2
 import yaml
@@ -80,9 +80,19 @@ class SpecDocModule:
         result['module'] = self._module_name
         return result
 
+    def __generate_ansible_doc_dicts(self):
+        documentation, returns, examples = self._metadata.ansible_doc
+        documentation['module'] = self._module_name
+        return documentation, returns, examples
+
     def generate_yaml(self) -> str:
         """Generates a YAML documentation string"""
         return yaml.dump(self.__generate_doc_dict())
+
+    def generate_ansible_doc_yaml(self) -> Tuple[str, str, str]:
+        """Generates YAML documentation strings for all Ansible documentation fields."""
+        documentation, returns, examples = self.__generate_ansible_doc_dicts()
+        return yaml.dump(documentation), yaml.dump(returns), yaml.dump(examples)
 
     def generate_json(self) -> str:
         """Generates a JSON documentation string"""
@@ -120,7 +130,7 @@ class CLI:
                                   type=str, help='The file to output the documentation to.')
 
         self._parser.add_argument('-f', '--output_format',
-                                  type=str, default='yaml',
+                                  type=str,
                                   choices=['yaml', 'json', 'jinja2'],
                                   help='The output format of the documentation.')
 
@@ -138,18 +148,22 @@ class CLI:
         self._mod = SpecDocModule()
         self._output = ''
 
-    @staticmethod
-    def _inject_docs(module_content: str, docs_content: str) -> str:
+    def _inject_docs(self, module_content: str) -> str:
         """Injects docs_content into the DOCUMENTATION field of module_content"""
+
+        doc, returns, examples = self._mod.generate_ansible_doc_yaml()
 
         red = RedBaron(module_content)
 
-        doc_field = red.find('name', value='DOCUMENTATION')
-        if doc_field is None or doc_field.parent is None:
-            raise Exception('failed to inject documentation: '
-                            'an empty DOCUMENTATION field must be specified')
+        to_inject = [['DOCUMENTATION', doc], ['RETURN', returns], ['EXAMPLES', examples]]
 
-        doc_field.parent.value.value = f'\'\'\'\n{docs_content}\'\'\''
+        for v in to_inject:
+            doc_field = red.find('name', value=v[0])
+            if doc_field is None or doc_field.parent is None:
+                raise Exception('failed to inject documentation: '
+                                f'an empty {v[0]} field must be specified')
+
+            doc_field.parent.value.value = f'\'\'\'\n{v[1]}\'\'\''
 
         return red.dumps()
 
@@ -206,6 +220,10 @@ class CLI:
         self._parser.error('No input source specified')
 
     def _process_docs(self):
+        # We'll handle the output logic elsewhere
+        if self._args.inject:
+            return
+
         if self._args.output_format == 'yaml':
             self._output = self._mod.generate_yaml()
             return
@@ -230,11 +248,11 @@ class CLI:
         if not self._args.inject:
             return
 
-        if self._args.output_format not in {'yaml'}:
-            self._parser.error(f'Format {self._args.output_format} is not supported for --inject.')
+        if self._args.output_format is not None:
+            self._parser.error(f'No format should be declared when using --inject.')
 
         with open(self._args.input_file, 'r+') as file:
-            injected_module = self._inject_docs(file.read(), self._output)
+            injected_module = self._inject_docs(file.read())
             file.seek(0)
             file.write(injected_module)
             file.truncate()

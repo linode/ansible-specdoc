@@ -92,6 +92,18 @@ class TestDocs(unittest.TestCase):
 
         self.assert_docs_dict_valid(module_1.SPECDOC_META, output_json)
 
+    def test_docs_file_ansible(self):
+        """Test that the JSON output is valid"""
+        module = SpecDocModule()
+
+        module.load_file(MODULE_1_DIR)
+
+        output_json = json.loads(module.generate_json())
+
+        assert output_json.get('module') == 'module_1'
+
+        self.assert_docs_dict_valid(module_1.SPECDOC_META, output_json)
+
     @staticmethod
     def test_docs_file_template():
         """Test that Jinja2 outputs are valid"""
@@ -115,11 +127,16 @@ class TestDocs(unittest.TestCase):
 
         module.load_file(module_path)
 
-        yaml_output = module.generate_yaml()
+        docs, returns, examples = module.generate_ansible_doc_yaml()
 
         with open(MODULE_1_DIR, 'r') as file:
             module_contents = file.read()
 
-        output = CLI._inject_docs(module_contents, yaml_output)
+        cli = CLI()
+        cli._mod = module
 
-        assert f'DOCUMENTATION = \'\'\'\n{yaml_output}\'\'\'' in output
+        output = cli._inject_docs(module_contents)
+
+        assert f'DOCUMENTATION = \'\'\'\n{docs}\'\'\'' in output
+        assert f'EXAMPLES = \'\'\'\n{examples}\'\'\'' in output
+        assert f'RETURN = \'\'\'\n{returns}\'\'\'' in output

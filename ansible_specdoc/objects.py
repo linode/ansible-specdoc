@@ -5,6 +5,8 @@ This module contains various classes to be used in Ansible modules.
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple
 
+import yaml
+
 
 class FieldType:
     """
@@ -237,7 +239,7 @@ class SpecDocMeta:
 
         return_values = {k: v.ansible_doc for k, v in self.return_values.items()}
 
-        examples = self.examples
+        examples = yaml.safe_load('\n'.join(self.examples))
 
         return documentation, return_values, examples
 

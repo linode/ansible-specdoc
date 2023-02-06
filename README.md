@@ -25,6 +25,24 @@ optional arguments:
                         The file to use as the template for templated formats.
 ```
 
+Generating a templated documentation file:
+
+```shell
+ansible-specdoc -f jinja2 -t path/to/my/template.md.j2 -i path/to/my/module.py -o path/to/output/file.md
+```
+
+Dynamically generating and injecting documentation back into module constants:
+
+```shell
+ansible-specdoc -j -i path/to/my/module.py
+```
+
+Generating a raw documentation string (not recommended):
+
+```shell
+ansible-specdoc -f yaml -i path/to/my/module.py
+```
+
 ## Specification Format
 
 ### Module Metadata
@@ -68,3 +86,7 @@ module_spec = {
 ```
 
 In order to retrieve the Ansible-compatible spec dict, use the `SPECDOC_META.ansible_spec` property.
+
+## Templates
+
+This repository provides an [example Markdown template](./template/module.md.j2) that can be used in conjunction with the `-t` argument.
