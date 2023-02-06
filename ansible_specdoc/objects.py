@@ -100,7 +100,6 @@ class SpecField:
 
         return result
 
-
     @property
     def ansible_spec(self) -> Dict[str, Any]:
         """
@@ -226,7 +225,8 @@ class SpecDocMeta:
 
         documentation = {
             'description': self.description,
-            'short_description': self.short_description if self.short_description is not None else self.description,
+            'short_description': self.short_description
+            if self.short_description is not None else self.description,
             'author': self.author,
             'deprecated': self.deprecated,
             'requirements': self.requirements,

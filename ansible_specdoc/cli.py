@@ -157,13 +157,13 @@ class CLI:
 
         to_inject = [['DOCUMENTATION', doc], ['RETURN', returns], ['EXAMPLES', examples]]
 
-        for v in to_inject:
-            doc_field = red.find('name', value=v[0])
+        for field_info in to_inject:
+            doc_field = red.find('name', value=field_info[0])
             if doc_field is None or doc_field.parent is None:
                 raise Exception('failed to inject documentation: '
-                                f'an empty {v[0]} field must be specified')
+                                f'an empty {field_info[0]} field must be specified')
 
-            doc_field.parent.value.value = f'\'\'\'\n{v[1]}\'\'\''
+            doc_field.parent.value.value = f'\'\'\'\n{field_info[1]}\'\'\''
 
         return red.dumps()
 
@@ -249,7 +249,7 @@ class CLI:
             return
 
         if self._args.output_format is not None:
-            self._parser.error(f'No format should be declared when using --inject.')
+            self._parser.error('No format should be declared when using --inject.')
 
         with open(self._args.input_file, 'r+') as file:
             injected_module = self._inject_docs(file.read())
