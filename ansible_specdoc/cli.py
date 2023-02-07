@@ -92,7 +92,8 @@ class SpecDocModule:
     def generate_ansible_doc_yaml(self) -> Tuple[str, str, str]:
         """Generates YAML documentation strings for all Ansible documentation fields."""
         documentation, returns, examples = self.__generate_ansible_doc_dicts()
-        return yaml.dump(documentation), yaml.dump(returns), yaml.dump(examples)
+
+        return yaml.dump(documentation), yaml.dump(returns), yaml.dump(examples, sort_keys=False)
 
     def generate_json(self) -> str:
         """Generates a JSON documentation string"""
