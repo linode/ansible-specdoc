@@ -2,6 +2,8 @@
 This module contains various classes to be used in Ansible modules.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple
 
@@ -47,7 +49,7 @@ class SpecField:
 
     # These fields are only necessary for `list` and `dict` types
     element_type: Optional[FieldType] = None
-    suboptions: Optional[Dict[str, 'SpecField']] = None  # Forward-declared
+    suboptions: Optional[Dict[str, SpecField]] = None  # Forward-declared
 
     # Additional fields to pass into the output Ansible spec dict
     additional_fields: Optional[Dict[str, Any]] = None
@@ -143,7 +145,7 @@ class SpecReturnValue:
     returned: str = 'always'
     version_added: Optional[str] = None
     sample: List[str] = field(default_factory=lambda: [])
-    contains: Optional[Dict[str, 'SpecReturnValue']] = None
+    contains: Optional[Dict[str, SpecReturnValue]] = None
     docs_url: Optional[str] = None
     elements: Optional[FieldType] = None
 
