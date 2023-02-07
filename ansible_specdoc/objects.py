@@ -35,11 +35,12 @@ class DeprecationInfo:
     Contains info about a deprecated module.
     """
 
+    alternative: str
+
     removed_in: Optional[str] = None  # Mutually exclusive with removed_by_date
     removed_by_date: Optional[str] = None
 
     why: Optional[str] = None
-    alternative: Optional[str] = None
 
     @property
     def ansible_doc_dict(self):

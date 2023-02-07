@@ -66,7 +66,7 @@ from ansible_specdoc.objects import *
 Alternatively, only specific classes can be imported using the following statement:
 
 ```python
-from ansible_specdoc.objects import SpecDocMeta, SpecField, SpecReturnValue, FieldType
+from ansible_specdoc.objects import SpecDocMeta, SpecField, SpecReturnValue, FieldType, DeprecationInfo
 ```
 
 ### Declaring Module Metadata
@@ -120,6 +120,24 @@ To prevent `ansible-specdoc` from executing module code, please ensure that all 
 if __name__ == '__main__':
     main()
 ```
+
+---
+
+To deprecate a module, specify the `deprecated` field as follows:
+
+```python
+SPECDOC_META = SpecDocMeta(
+    ...
+    deprecated=DeprecationInfo(
+        alternative='my.new.module',
+        removed_in='1.0.0',
+        why='Reason for deprecation'
+    )
+)
+```
+
+When deprecating a module, you will also need to update your `meta/runtime.yml` file.
+Please refer to the [official Ansible deprecation documentation](https://docs.ansible.com/ansible/latest/dev_guide/module_lifecycle.html#deprecating-modules-and-plugins-in-a-collection) for more details.
 
 ## Templates
 
