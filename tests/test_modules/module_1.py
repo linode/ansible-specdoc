@@ -1,6 +1,7 @@
 """Module for testing docs generation functionality"""
 
-from ansible_specdoc.objects import SpecDocMeta, SpecField, FieldType, SpecReturnValue, DeprecationInfo
+from ansible_specdoc.objects import SpecDocMeta, SpecField, FieldType, SpecReturnValue, \
+    DeprecationInfo
 
 DOCUMENTATION = '''
 really cool non-empty docstring

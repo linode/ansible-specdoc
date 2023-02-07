@@ -43,6 +43,10 @@ class DeprecationInfo:
 
     @property
     def ansible_doc_dict(self):
+        """
+        Returns a dict representing this deprecation.
+        """
+
         if self.removed_in and self.removed_by_date:
             raise ValueError('removed_in and removed_by_date are conflicting fields')
 
