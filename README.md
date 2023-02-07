@@ -43,7 +43,7 @@ Generating a raw documentation string (not recommended):
 ansible-specdoc -f yaml -i path/to/my/module.py
 ```
 
-## Specification Format
+## Implementation
 
 ### Module Metadata
 The `ansible-specdoc` specification format requires that each module exports a `SPECDOC_META` object with the following structure:

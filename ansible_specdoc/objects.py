@@ -5,7 +5,7 @@ This module contains various classes to be used in Ansible modules.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Union
 
 import yaml
 
@@ -35,9 +35,9 @@ class SpecField:
     A single field to be used in an Ansible module.
     """
     type: FieldType
+    description: Union[str, List[str]]
 
     version_added: Optional[str] = None
-    description: Optional[List[str]] = None
     required: bool = False
     default: Optional[Any] = None
     editable: bool = False
@@ -60,13 +60,14 @@ class SpecField:
         Returns the Ansible-compatible docs dict for this field.
         """
 
+        if isinstance(self.description, str):
+            self.description = [self.description]
+
         result = {
             'type': self.type,
             'required': self.required,
+            'description': self.description
         }
-
-        if self.description is not None:
-            result['description'] = self.description
 
         if self.default is not None:
             result['default'] = self.default
@@ -95,6 +96,10 @@ class SpecField:
         """
 
         result = self.__dict__
+
+        if isinstance(result['description'], str):
+            result['description'] = [result['description']]
+
         if self.suboptions is not None:
             result['suboptions'] = {
                 k: v.doc_dict for k, v in self.suboptions.items() if not v.doc_hide
@@ -190,7 +195,7 @@ class SpecDocMeta:
     """
     The top-level description of an Ansible module.
     """
-    description: List[str]
+    description: Union[str, List[str]]
     options: Dict[str, SpecField]
 
     deprecated: bool = False
@@ -212,6 +217,9 @@ class SpecDocMeta:
 
         result = self.__dict__
 
+        if isinstance(result['description'], str):
+            result['description'] = [result['description']]
+
         result['options'] = {k: v.doc_dict for k, v in self.options.items() if not v.doc_hide}
 
         if self.return_values is not None:
@@ -225,10 +233,12 @@ class SpecDocMeta:
         Returns the Ansible-compatible documentation dicts for this module.
         """
 
+        description = self.description if isinstance(self.description, str) else self.description
+
         documentation = {
-            'description': self.description,
+            'description': description,
             'short_description': self.short_description
-            if self.short_description is not None else self.description,
+            if self.short_description is not None else ' '.join(description),
             'author': self.author,
             'deprecated': self.deprecated,
             'requirements': self.requirements,
