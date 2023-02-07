@@ -35,8 +35,8 @@ class SpecField:
     A single field to be used in an Ansible module.
     """
     type: FieldType
-    description: Union[str, List[str]]
 
+    description: Union[str, List[str]] = ''
     version_added: Optional[str] = None
     required: bool = False
     default: Optional[Any] = None
