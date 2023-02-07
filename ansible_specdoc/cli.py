@@ -135,8 +135,8 @@ class CLI:
                                   help='The output format of the documentation.')
 
         self._parser.add_argument('-j', '--inject',
-                                  help='Inject the output documentation into the `DOCUMENTATION` '
-                                       'field of input module.',
+                                  help='Inject the output documentation into the `DOCUMENTATION`, '
+                                       '`RETURN`, and `EXAMPLES` fields of input module.',
                                   action='store_true')
 
         self._parser.add_argument('-t', '--template_file',

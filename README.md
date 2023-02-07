@@ -11,7 +11,7 @@ ansible-specdoc [-h] [-s] [-n MODULE_NAME] [-i INPUT_FILE] [-o OUTPUT_FILE] [-f 
 
 Generate Ansible Module documentation from spec.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -s, --stdin           Read the module from stdin.
   -n MODULE_NAME, --module-name MODULE_NAME
@@ -22,7 +22,7 @@ optional arguments:
                         The file to output the documentation to.
   -f {yaml,json,jinja2}, --output_format {yaml,json,jinja2}
                         The output format of the documentation.
-  -j, --inject          Inject the output documentation into the `DOCUMENTATION` field of input module.
+  -j, --inject          Inject the output documentation into the `DOCUMENTATION`, `RETURN`, and `EXAMPLES` fields of input module.
   -t TEMPLATE_FILE, --template_file TEMPLATE_FILE
                         The file to use as the template for templated formats.
 ```
