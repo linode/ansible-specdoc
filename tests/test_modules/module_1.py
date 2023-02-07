@@ -1,6 +1,6 @@
 """Module for testing docs generation functionality"""
 
-from ansible_specdoc.objects import SpecDocMeta, SpecField, FieldType, SpecReturnValue
+from ansible_specdoc.objects import SpecDocMeta, SpecField, FieldType, SpecReturnValue, DeprecationInfo
 
 DOCUMENTATION = '''
 really cool non-empty docstring
@@ -69,6 +69,11 @@ SPECDOC_META = SpecDocMeta(
     examples=[
         'blah'
     ],
+    deprecated=DeprecationInfo(
+        why='cuz',
+        removed_in='1.0.0',
+        alternative='use something else'
+    ),
     return_values={
         'cool': SpecReturnValue(
             description='COOL',

@@ -30,6 +30,25 @@ class FieldType:
 
 
 @dataclass
+class DeprecationInfo:
+    """
+    Contains info about a deprecated module.
+    """
+
+    removed_in: Optional[str] = None  # Mutually exclusive with removed_by_date
+    removed_by_date: Optional[str] = None
+
+    why: Optional[str] = None
+    alternative: Optional[str] = None
+
+    @property
+    def ansible_doc_dict(self):
+        if self.removed_in and self.removed_by_date:
+            raise ValueError('removed_in and removed_by_date are conflicting fields')
+
+        return {k: v for k, v in self.__dict__.items() if v is not None}
+
+@dataclass
 class SpecField:
     """
     A single field to be used in an Ansible module.
@@ -198,7 +217,7 @@ class SpecDocMeta:
     description: Union[str, List[str]]
     options: Dict[str, SpecField]
 
-    deprecated: bool = False
+    deprecated: Optional[DeprecationInfo] = None
     version_added: Optional[str] = None
     short_description: Optional[str] = None
     requirements: Optional[List[str]] = None
@@ -225,6 +244,9 @@ class SpecDocMeta:
         if self.return_values is not None:
             result['return_values'] = {k: v.doc_dict for k, v in self.return_values.items()}
 
+        if self.deprecated is not None:
+            result['deprecated'] = self.deprecated.ansible_doc_dict
+
         return result
 
     @property
@@ -240,7 +262,6 @@ class SpecDocMeta:
             'short_description': self.short_description
             if self.short_description is not None else ' '.join(description),
             'author': self.author,
-            'deprecated': self.deprecated,
             'requirements': self.requirements,
             'notes': self.notes,
             'options': {k: v.ansible_doc_dict for k, v in self.options.items() if not v.doc_hide}
@@ -248,6 +269,9 @@ class SpecDocMeta:
 
         if self.version_added is not None:
             documentation['version_added'] = self.version_added
+
+        if self.deprecated is not None:
+            documentation['deprecated'] = self.deprecated.ansible_doc_dict
 
         return_values = {k: v.ansible_doc for k, v in self.return_values.items()}
 

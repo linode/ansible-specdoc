@@ -29,6 +29,7 @@ class TestDocs(unittest.TestCase):
         assert generated_spec.get('requirements') == original_spec.requirements
         assert generated_spec.get('author') == original_spec.author
         assert generated_spec.get('examples') == original_spec.examples
+        assert generated_spec.get('deprecated') == original_spec.deprecated.ansible_doc_dict
         assert generated_spec.get('return_values') == {
             k: v.__dict__ for k, v in original_spec.return_values.items()
         }
