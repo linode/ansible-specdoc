@@ -124,7 +124,7 @@ class SpecField:
 
         if isinstance(result['description'], str):
             result['description'] = [result['description']]
-            
+
         if self.suboptions is not None:
             result['suboptions'] = {
                 k: v.doc_dict for k, v in self.suboptions.items() if not v.doc_hide
