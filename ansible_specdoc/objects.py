@@ -4,6 +4,7 @@ This module contains various classes to be used in Ansible modules.
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple, Union
 
@@ -67,7 +68,7 @@ class SpecField:
     editable: bool = False
     conflicts_with: Optional[List[str]] = field(default_factory=lambda: [])
     no_log: bool = False
-    choices: Optional[List[str]] = None
+    choices: Optional[List[Any]] = None
     doc_hide: bool = False
     aliases: Optional[List[str]] = None
 
@@ -119,11 +120,11 @@ class SpecField:
         Returns the docs dict for this field.
         """
 
-        result = self.__dict__
+        result = copy.deepcopy(self.__dict__)
 
         if isinstance(result['description'], str):
             result['description'] = [result['description']]
-
+            
         if self.suboptions is not None:
             result['suboptions'] = {
                 k: v.doc_dict for k, v in self.suboptions.items() if not v.doc_hide
