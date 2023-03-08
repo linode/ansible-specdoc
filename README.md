@@ -4,6 +4,8 @@ A utility for dynamically generating documentation from an Ansible module's spec
 
 This project was primarily designed for the [Linode Ansible Collection](https://github.com/linode/ansible_linode).
 
+An example Ansible Collection using `ansible-specdoc` can be found [here](https://github.com/linode/ansible-specdoc-example).
+
 ## Usage
 
 ```sh
