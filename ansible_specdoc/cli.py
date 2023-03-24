@@ -7,7 +7,6 @@ import importlib.util
 import json
 import os
 import pathlib
-import pdb
 import sys
 from types import ModuleType
 from typing import Optional, Tuple
@@ -144,14 +143,14 @@ class CLI:
         self._parser.add_argument('-t', '--template_file',
                                   type=str,
                                   help='The file to use as the template for templated formats.')
-        
+
         self._parser.add_argument('-c', '--clear_injected_fields',
-                                  help='Clears the DOCUMENTATION, RETURNS, and EXAMPLES fields in' 
+                                    help='Clears the DOCUMENTATION, RETURNS, and EXAMPLES fields in'
                                        'specified module and sets them to an empty string.',
                                     default=False,
                                     const=True,
                                     nargs="?",)
-  
+
 
         self._args, _ = self._parser.parse_known_args()
 
