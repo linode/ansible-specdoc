@@ -4,8 +4,10 @@
 
 import json
 import os
+from types import SimpleNamespace
 import unittest
 from typing import Dict, Any
+from unittest.mock import patch
 
 import yaml
 from ansible_specdoc.objects import SpecDocMeta, SpecField
@@ -141,3 +143,28 @@ class TestDocs(unittest.TestCase):
         assert f'DOCUMENTATION = \'\'\'\n{docs}\'\'\'' in output
         assert f'EXAMPLES = \'\'\'\n{examples}\'\'\'' in output
         assert f'RETURN = \'\'\'\n{returns}\'\'\'' in output
+
+    @staticmethod
+    def test_docs_file_clear():
+        """Test that documentation fields are injected correctly"""
+        module_path = MODULE_1_DIR
+
+        module = SpecDocModule()
+
+        module.load_file(module_path)
+
+        docs, returns, examples = module.generate_ansible_doc_yaml()
+
+        with open(MODULE_1_DIR, 'r') as file:
+            module_contents = file.read()
+
+        cli = CLI()
+        cli._mod = module
+
+        cli._args = SimpleNamespace(clear_injected_fields=True)
+
+        output = cli._inject_docs(module_contents)
+
+        assert f'DOCUMENTATION = \'\'\'\n\'\'\'' in output
+        assert f'EXAMPLES = \'\'\'\n\'\'\'' in output
+        assert f'RETURN = \'\'\'\n\'\'\'' in output

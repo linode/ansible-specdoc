@@ -27,6 +27,8 @@ options:
   -j, --inject          Inject the output documentation into the `DOCUMENTATION`, `RETURN`, and `EXAMPLES` fields of input module.
   -t TEMPLATE_FILE, --template_file TEMPLATE_FILE
                         The file to use as the template for templated formats.
+  -c, --clear_injected_fields,
+                        Clears the DOCUMENTATION, RETURNS, and EXAMPLES fields in specified module and sets them to an empty string.
 ```
 
 ---
