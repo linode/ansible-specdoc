@@ -4,6 +4,7 @@
 
 import json
 import os
+from types import SimpleNamespace
 import unittest
 from typing import Dict, Any
 
@@ -141,3 +142,26 @@ class TestDocs(unittest.TestCase):
         assert f'DOCUMENTATION = \'\'\'\n{docs}\'\'\'' in output
         assert f'EXAMPLES = \'\'\'\n{examples}\'\'\'' in output
         assert f'RETURN = \'\'\'\n{returns}\'\'\'' in output
+
+    @staticmethod
+    def test_docs_file_clear():
+        """Test that documentation fields are injected correctly"""
+        module_path = MODULE_1_DIR
+
+        module = SpecDocModule()
+
+        module.load_file(module_path)
+
+        with open(MODULE_1_DIR, 'r') as file:
+            module_contents = file.read()
+
+        cli = CLI()
+        cli._mod = module
+
+        cli._args = SimpleNamespace(clear_injected_fields=True)
+
+        output = cli._inject_docs(module_contents)
+
+        assert 'DOCUMENTATION = \'\'\'\n\'\'\'' in output
+        assert 'EXAMPLES = \'\'\'\n\'\'\'' in output
+        assert 'RETURN = \'\'\'\n\'\'\'' in output

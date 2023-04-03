@@ -144,6 +144,14 @@ class CLI:
                                   type=str,
                                   help='The file to use as the template for templated formats.')
 
+        self._parser.add_argument('-c', '--clear_injected_fields',
+                                    help='Clears the DOCUMENTATION, RETURNS, and EXAMPLES fields in'
+                                       'specified module and sets them to an empty string.',
+                                    default=False,
+                                    const=True,
+                                    nargs="?",)
+
+
         self._args, _ = self._parser.parse_known_args()
 
         self._mod = SpecDocModule()
@@ -152,7 +160,10 @@ class CLI:
     def _inject_docs(self, module_content: str) -> str:
         """Injects docs_content into the DOCUMENTATION field of module_content"""
 
-        doc, returns, examples = self._mod.generate_ansible_doc_yaml()
+        if self._args.clear_injected_fields:
+            doc, returns, examples = "","",""
+        else:
+            doc, returns, examples = self._mod.generate_ansible_doc_yaml()
 
         red = RedBaron(module_content)
 
