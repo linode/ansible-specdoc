@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import yaml
 
@@ -16,18 +16,18 @@ class FieldType:
     Enum for Ansible-compatible field types.
     """
 
-    list = 'list'
-    dict = 'dict'
-    bool = 'bool'
-    integer = 'int'
-    string = 'str'
-    float = 'float'
-    path = 'path'
-    raw = 'raw'
-    json_arg = 'jsonarg'
-    json = 'json'
-    bytes = 'bytes'
-    bits = 'bits'
+    list = "list"
+    dict = "dict"
+    bool = "bool"
+    integer = "int"
+    string = "str"
+    float = "float"
+    path = "path"
+    raw = "raw"
+    json_arg = "jsonarg"
+    json = "json"
+    bytes = "bytes"
+    bits = "bits"
 
 
 @dataclass
@@ -50,18 +50,22 @@ class DeprecationInfo:
         """
 
         if self.removed_in and self.removed_by_date:
-            raise ValueError('removed_in and removed_by_date are conflicting fields')
+            raise ValueError(
+                "removed_in and removed_by_date are conflicting fields"
+            )
 
         return {k: v for k, v in self.__dict__.items() if v is not None}
+
 
 @dataclass
 class SpecField:
     """
     A single field to be used in an Ansible module.
     """
+
     type: FieldType
 
-    description: Union[str, List[str]] = ''
+    description: Union[str, List[str]] = ""
     version_added: Optional[str] = None
     required: bool = False
     default: Optional[Any] = None
@@ -89,28 +93,30 @@ class SpecField:
             self.description = [self.description]
 
         result = {
-            'type': self.type,
-            'required': self.required,
-            'description': self.description
+            "type": self.type,
+            "required": self.required,
+            "description": self.description,
         }
 
         if self.default is not None:
-            result['default'] = self.default
+            result["default"] = self.default
 
         if self.choices is not None:
-            result['choices'] = self.choices
+            result["choices"] = self.choices
 
         if self.element_type is not None:
-            result['elements'] = self.element_type
+            result["elements"] = self.element_type
 
         if self.aliases is not None:
-            result['aliases'] = self.aliases
+            result["aliases"] = self.aliases
 
         if self.version_added is not None:
-            result['version_added'] = self.version_added
+            result["version_added"] = self.version_added
 
         if self.suboptions is not None:
-            result['suboptions'] = {k: v.ansible_doc_dict for k, v in self.suboptions.items()}
+            result["suboptions"] = {
+                k: v.ansible_doc_dict for k, v in self.suboptions.items()
+            }
 
         return result
 
@@ -122,12 +128,14 @@ class SpecField:
 
         result = copy.deepcopy(self.__dict__)
 
-        if isinstance(result['description'], str):
-            result['description'] = [result['description']]
+        if isinstance(result["description"], str):
+            result["description"] = [result["description"]]
 
         if self.suboptions is not None:
-            result['suboptions'] = {
-                k: v.doc_dict for k, v in self.suboptions.items() if not v.doc_hide
+            result["suboptions"] = {
+                k: v.doc_dict
+                for k, v in self.suboptions.items()
+                if not v.doc_hide
             }
 
         return result
@@ -138,25 +146,27 @@ class SpecField:
         Returns the Ansible-compatible spec for this field.
         """
         result = {
-            'type': str(self.type),
-            'no_log': self.no_log,
-            'required': self.required,
+            "type": str(self.type),
+            "no_log": self.no_log,
+            "required": self.required,
         }
 
         if self.default is not None:
-            result['default'] = self.default
+            result["default"] = self.default
 
         if self.choices is not None:
-            result['choices'] = self.choices
+            result["choices"] = self.choices
 
         if self.aliases is not None:
-            result['aliases'] = self.aliases
+            result["aliases"] = self.aliases
 
         if self.suboptions is not None:
-            result['options'] = {k: v.ansible_spec for k, v in self.suboptions.items()}
+            result["options"] = {
+                k: v.ansible_spec for k, v in self.suboptions.items()
+            }
 
         if self.element_type is not None:
-            result['elements'] = str(self.element_type)
+            result["elements"] = str(self.element_type)
 
         if self.additional_fields is not None:
             result = {**result, **self.additional_fields}
@@ -169,10 +179,11 @@ class SpecReturnValue:
     """
     A description of an Ansible module's return value.
     """
+
     description: str
     type: FieldType
 
-    returned: str = 'always'
+    returned: str = "always"
     version_added: Optional[str] = None
     sample: List[str] = field(default_factory=lambda: [])
     contains: Optional[Dict[str, SpecReturnValue]] = None
@@ -187,7 +198,9 @@ class SpecReturnValue:
         result = self.__dict__
 
         if self.contains is not None:
-            result['contains'] = {k: v.doc_dict for k, v in self.contains.items()}
+            result["contains"] = {
+                k: v.doc_dict for k, v in self.contains.items()
+            }
 
         return result
 
@@ -197,20 +210,22 @@ class SpecReturnValue:
         Returns an Ansible-compatible documentation dict for a return value.
         """
         result = {
-            'description': self.description,
-            'type': str(self.type),
-            'returned': self.returned,
-            'sample': self.sample
+            "description": self.description,
+            "type": str(self.type),
+            "returned": self.returned,
+            "sample": self.sample,
         }
 
         if self.elements is not None:
-            result['elements'] = self.elements
+            result["elements"] = self.elements
 
         if self.contains is not None:
-            result['contains'] = {k: v.ansible_doc for k, v in self.contains.items()}
+            result["contains"] = {
+                k: v.ansible_doc for k, v in self.contains.items()
+            }
 
         if self.version_added is not None:
-            result['version_added'] = self.version_added
+            result["version_added"] = self.version_added
 
         return result
 
@@ -220,6 +235,7 @@ class SpecDocMeta:
     """
     The top-level description of an Ansible module.
     """
+
     description: Union[str, List[str]]
     options: Dict[str, SpecField]
 
@@ -229,7 +245,9 @@ class SpecDocMeta:
     requirements: Optional[List[str]] = None
     author: Optional[List[str]] = None
     examples: Optional[List[str]] = field(default_factory=lambda: [])
-    return_values: Optional[Dict[str, SpecReturnValue]] = field(default_factory=lambda: {})
+    return_values: Optional[Dict[str, SpecReturnValue]] = field(
+        default_factory=lambda: {}
+    )
     notes: Optional[List[str]] = field(default_factory=lambda: [])
 
     @property
@@ -242,16 +260,20 @@ class SpecDocMeta:
 
         result = self.__dict__
 
-        if isinstance(result['description'], str):
-            result['description'] = [result['description']]
+        if isinstance(result["description"], str):
+            result["description"] = [result["description"]]
 
-        result['options'] = {k: v.doc_dict for k, v in self.options.items() if not v.doc_hide}
+        result["options"] = {
+            k: v.doc_dict for k, v in self.options.items() if not v.doc_hide
+        }
 
         if self.return_values is not None:
-            result['return_values'] = {k: v.doc_dict for k, v in self.return_values.items()}
+            result["return_values"] = {
+                k: v.doc_dict for k, v in self.return_values.items()
+            }
 
         if self.deprecated is not None:
-            result['deprecated'] = self.deprecated.ansible_doc_dict
+            result["deprecated"] = self.deprecated.ansible_doc_dict
 
         return result
 
@@ -261,27 +283,38 @@ class SpecDocMeta:
         Returns the Ansible-compatible documentation dicts for this module.
         """
 
-        description = self.description if isinstance(self.description, str) else self.description
+        description = (
+            self.description
+            if isinstance(self.description, str)
+            else self.description
+        )
 
         documentation = {
-            'description': description,
-            'short_description': self.short_description
-            if self.short_description is not None else ' '.join(description),
-            'author': self.author,
-            'requirements': self.requirements,
-            'notes': self.notes,
-            'options': {k: v.ansible_doc_dict for k, v in self.options.items() if not v.doc_hide}
+            "description": description,
+            "short_description": self.short_description
+            if self.short_description is not None
+            else " ".join(description),
+            "author": self.author,
+            "requirements": self.requirements,
+            "notes": self.notes,
+            "options": {
+                k: v.ansible_doc_dict
+                for k, v in self.options.items()
+                if not v.doc_hide
+            },
         }
 
         if self.version_added is not None:
-            documentation['version_added'] = self.version_added
+            documentation["version_added"] = self.version_added
 
         if self.deprecated is not None:
-            documentation['deprecated'] = self.deprecated.ansible_doc_dict
+            documentation["deprecated"] = self.deprecated.ansible_doc_dict
 
-        return_values = {k: v.ansible_doc for k, v in self.return_values.items()}
+        return_values = {
+            k: v.ansible_doc for k, v in self.return_values.items()
+        }
 
-        examples = yaml.safe_load('\n'.join(self.examples))
+        examples = yaml.safe_load("\n".join(self.examples))
 
         return documentation, return_values, examples
 
