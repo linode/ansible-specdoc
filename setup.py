@@ -32,7 +32,7 @@ setuptools.setup(
     url="https://github.com/linode/ansible-specdoc/",
     packages=['ansible_specdoc'],
     install_requires=[
-        'PyYAML==5.4.1',
+        'PyYAML==6.0',
         'Jinja2==3.0.1',
         'redbaron==0.9.2'
     ],
