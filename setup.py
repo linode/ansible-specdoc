@@ -33,7 +33,7 @@ setuptools.setup(
     packages=['ansible_specdoc'],
     install_requires=[
         'PyYAML==5.4.1',
-        'Jinja2==3.0.1',
+        'Jinja2==3.1.2',
         'redbaron==0.9.2'
     ],
     setup_requires=['setupext_janitor'],
