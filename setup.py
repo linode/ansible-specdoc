@@ -7,12 +7,6 @@ current_dir = Path(__file__).parent.resolve()
 readme_path = current_dir / "README.md"
 requirements_path = current_dir / "requirements.txt"
 
-def get_long_description():
-    with open(readme_path, encoding="utf-8") as f:
-        long_description = f.read()
-
-    return long_description
-
 def get_version():
     version_env = os.getenv("SPECDOC_VERSION")
 
@@ -22,26 +16,19 @@ def get_version():
     # Default unspecified version
     return "0.0.0"
 
-def read_requirements():
-    with open(requirements_path, "r") as req:
-        content = req.read()
-        requirements = content.split("\n")
-
-    return requirements
-
 setuptools.setup(
     name="ansible-specdoc",
     version=get_version(),
     author="Linode",
     author_email="dev-dx@linode.com",
     description="A simple tool for generating Ansible collection documentation from module spec.",
-    long_description=get_long_description(),
+    long_description=readme_path.read_text(),
     long_description_content_type="text/markdown",
     license="Apache License 2.0",
     keywords="ansible",
     url="https://github.com/linode/ansible-specdoc/",
     packages=["ansible_specdoc"],
-    install_requires=read_requirements(),
+    install_requires=requirements_path.read_text().splitlines(),
     python_requires=">=3",
     entry_points={
         "console_scripts": ["ansible-specdoc=ansible_specdoc.cli:main"],
