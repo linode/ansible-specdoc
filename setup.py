@@ -19,6 +19,13 @@ def get_version():
     # Default unspecified version
     return "0.0.0"
 
+def read_requirements():
+    with open('requirements.txt', 'r') as req:
+        content = req.read()
+        requirements = content.split('\n')
+
+    return requirements
+
 setuptools.setup(
     name="ansible-specdoc",
     version=get_version(),
@@ -31,15 +38,9 @@ setuptools.setup(
     keywords="ansible",
     url="https://github.com/linode/ansible-specdoc/",
     packages=['ansible_specdoc'],
-    install_requires=[
-        'PyYAML==5.4.1',
-        'Jinja2==3.0.1',
-        'redbaron==0.9.2'
-    ],
-    setup_requires=['setupext_janitor'],
+    install_requires=read_requirements(),
     python_requires='>=3',
     entry_points={
         'console_scripts': ['ansible-specdoc=ansible_specdoc.cli:main'],
-        'distutils.commands': ['clean = setupext_janitor.janitor:CleanCommand']
     }
 )
