@@ -3,7 +3,9 @@ from pathlib import Path
 
 import setuptools
 
-readme_path = Path(__file__).resolve() / "README.md"
+current_dir = Path(__file__).parent.resolve()
+readme_path = current_dir / "README.md"
+requirements_path = current_dir / "requirements.txt"
 
 def get_long_description():
     with open(readme_path, encoding="utf-8") as f:
@@ -21,7 +23,7 @@ def get_version():
     return "0.0.0"
 
 def read_requirements():
-    with open("requirements.txt", "r") as req:
+    with open(requirements_path, "r") as req:
         content = req.read()
         requirements = content.split("\n")
 
