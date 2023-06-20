@@ -1,11 +1,12 @@
 import os
+from pathlib import Path
 
 import setuptools
 
-here = os.path.abspath(os.path.dirname(__file__))
+readme_path = Path(__file__).resolve() / "README.md"
 
 def get_long_description():
-    with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    with open(readme_path, encoding="utf-8") as f:
         long_description = f.read()
 
     return long_description
@@ -20,9 +21,9 @@ def get_version():
     return "0.0.0"
 
 def read_requirements():
-    with open('requirements.txt', 'r') as req:
+    with open("requirements.txt", "r") as req:
         content = req.read()
-        requirements = content.split('\n')
+        requirements = content.split("\n")
 
     return requirements
 
@@ -37,10 +38,10 @@ setuptools.setup(
     license="Apache License 2.0",
     keywords="ansible",
     url="https://github.com/linode/ansible-specdoc/",
-    packages=['ansible_specdoc'],
+    packages=["ansible_specdoc"],
     install_requires=read_requirements(),
-    python_requires='>=3',
+    python_requires=">=3",
     entry_points={
-        'console_scripts': ['ansible-specdoc=ansible_specdoc.cli:main'],
-    }
+        "console_scripts": ["ansible-specdoc=ansible_specdoc.cli:main"],
+    },
 )
