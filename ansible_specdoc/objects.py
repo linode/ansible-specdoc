@@ -291,9 +291,11 @@ class SpecDocMeta:
 
         documentation = {
             "description": description,
-            "short_description": self.short_description
-            if self.short_description is not None
-            else " ".join(description),
+            "short_description": (
+                self.short_description
+                if self.short_description is not None
+                else " ".join(description)
+            ),
             "author": self.author,
             "requirements": self.requirements,
             "notes": self.notes,
