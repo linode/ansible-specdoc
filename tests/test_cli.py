@@ -183,6 +183,6 @@ class TestDocs(unittest.TestCase):
 
         output = cli._inject_docs(module_contents)
 
-        assert f'DOCUMENTATION = r"""\n"""' in output
-        assert f'EXAMPLES = r"""\n"""' in output
-        assert f'RETURN = r"""\n"""' in output
+        assert 'DOCUMENTATION = r"""\n"""' in output
+        assert 'EXAMPLES = r"""\n"""' in output
+        assert 'RETURN = r"""\n"""' in output
