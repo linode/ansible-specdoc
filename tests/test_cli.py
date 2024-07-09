@@ -160,9 +160,9 @@ class TestDocs(unittest.TestCase):
 
         output = cli._inject_docs(module_contents)
 
-        assert f"DOCUMENTATION = '''\n{docs}'''" in output
-        assert f"EXAMPLES = '''\n{examples}'''" in output
-        assert f"RETURN = '''\n{returns}'''" in output
+        assert f'DOCUMENTATION = r"""\n{docs}"""' in output
+        assert f'EXAMPLES = r"""\n{examples}"""' in output
+        assert f'RETURN = r"""\n{returns}"""' in output
 
     @staticmethod
     def test_docs_file_clear():
@@ -183,6 +183,6 @@ class TestDocs(unittest.TestCase):
 
         output = cli._inject_docs(module_contents)
 
-        assert "DOCUMENTATION = '''\n'''" in output
-        assert "EXAMPLES = '''\n'''" in output
-        assert "RETURN = '''\n'''" in output
+        assert f'DOCUMENTATION = r"""\n"""' in output
+        assert f'EXAMPLES = r"""\n"""' in output
+        assert f'RETURN = r"""\n"""' in output

@@ -223,7 +223,7 @@ class CLI:
                     f"an empty {field_info[0]} field must be specified"
                 )
 
-            doc_field.parent.value.value = f"'''\n{field_info[1]}'''"
+            doc_field.parent.value.value = f'r"""\n{field_info[1]}"""'
 
         return red.dumps()
 
