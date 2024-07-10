@@ -8,15 +8,15 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 really cool non-empty docstring
 """
 
-RETURN = """
+RETURN = r"""
 really cool non-empty return string
 """
 
-EXAMPLES = """
+EXAMPLES = r"""
 really cool non-empty examples"""
 
 MY_MODULE_DICT_SPEC = {
