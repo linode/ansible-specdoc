@@ -5,6 +5,7 @@ This module contains various classes to be used in Ansible modules.
 from __future__ import annotations
 
 import copy
+import json
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -213,7 +214,7 @@ class SpecReturnValue:
             "description": self.description,
             "type": str(self.type),
             "returned": self.returned,
-            "sample": self.sample,
+            "sample": json.loads("".join(self.sample)),
         }
 
         if self.elements is not None:

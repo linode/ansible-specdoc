@@ -163,6 +163,7 @@ class TestDocs(unittest.TestCase):
         assert f'DOCUMENTATION = r"""\n{docs}"""' in output
         assert f'EXAMPLES = r"""\n{examples}"""' in output
         assert f'RETURN = r"""\n{returns}"""' in output
+        assert "{" not in returns
 
     @staticmethod
     def test_docs_file_clear():
