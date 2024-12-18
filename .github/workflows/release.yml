@@ -26,5 +26,5 @@ jobs:
         env:
           SPECDOC_VERSION: ${{ github.event.release.tag_name }}
 
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: publish the release to pypi
+        uses: pypa/gh-action-pypi-publish@67339c736fd9354cd4f8cb0b744f2b82a74b5c70 # pin@v1.12.3
