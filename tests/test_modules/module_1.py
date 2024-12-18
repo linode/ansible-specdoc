@@ -60,7 +60,7 @@ MY_MODULE_SPEC = {
 
 SPECDOC_META = SpecDocMeta(
     description=["My really cool Ansible module!"],
-    requirements=["python >= 3.8"],
+    requirements=["python >= 3.9"],
     author=["Lena Garber"],
     examples=["blah"],
     deprecated=DeprecationInfo(

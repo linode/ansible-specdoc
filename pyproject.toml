@@ -1,6 +1,22 @@
 [tool.pylint.main]
-py-version = "3.8"
-disable = ["raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "exec-used", "too-many-branches", "too-few-public-methods", "unspecified-encoding", "consider-using-f-string", "too-many-instance-attributes", "broad-exception-raised"]
+py-version = "3.9"
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "exec-used",
+    "too-many-branches",
+    "too-few-public-methods",
+    "unspecified-encoding",
+    "consider-using-f-string",
+    "too-many-instance-attributes",
+    "broad-exception-raised",
+]
 
 [build-system]
 requires = ["setuptools", "wheel"]
@@ -12,7 +28,7 @@ line_length = 80
 
 [tool.black]
 line-length = 80
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 
 [tool.autoflake]
 expand-star-imports = false
