@@ -1,9 +1,9 @@
-name: Run Tests
+name: Continuous Integration
 
 on: [ push, pull_request ]
 
 jobs:
-  lint:
+  test-and-lint:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
@@ -19,3 +19,6 @@ jobs:
 
       - name: run tests
         run: make test
+      
+      - name: run linter
+        run: make lint
