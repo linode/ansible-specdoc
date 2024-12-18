@@ -29,7 +29,7 @@ setuptools.setup(
     url="https://github.com/linode/ansible-specdoc/",
     packages=["ansible_specdoc"],
     install_requires=requirements_path.read_text().splitlines(),
-    python_requires=">=3",
+    python_requires=">=3.9",
     entry_points={
         "console_scripts": ["ansible-specdoc=ansible_specdoc.cli:main"],
     },
