@@ -1,20 +1,20 @@
+# PyPI trusted publisher config will need an update if this file is renamed.
+# See: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+
 name: release
 on:
   workflow_dispatch: null
   release:
     types: [ published ]
 jobs:
-  galaxyrelease:
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
-
-      - name: update packages
-        run: sudo apt-get update -y
-
-      - name: install make
-        run: sudo apt-get install -y build-essential
 
       - name: setup python 3
         uses: actions/setup-python@v5
@@ -28,5 +28,3 @@ jobs:
 
       - name: publish the release to pypi
         uses: pypa/gh-action-pypi-publish@67339c736fd9354cd4f8cb0b744f2b82a74b5c70 # pin@v1.12.3
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
