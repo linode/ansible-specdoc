@@ -214,7 +214,7 @@ class SpecReturnValue:
             "description": self.description,
             "type": str(self.type),
             "returned": self.returned,
-            "sample": json.loads("".join(self.sample)),
+            "sample": [json.loads(sample) for sample in self.sample],
         }
 
         if self.elements is not None:
