@@ -132,9 +132,11 @@ class CLI:
     def __init__(self):
         self._parser = argparse.ArgumentParser(
             description="Generate Ansible Module documentation from spec.\n\n"
-                        "SECURITY WARNING: This tool imports and executes arbitrary Python code from the input file provided with -i/--input_file.\n"
-                        "Do not use this tool in automation or with untrusted input files. Only use with trusted code and in a safe environment.",
-            formatter_class=argparse.RawDescriptionHelpFormatter
+            "SECURITY WARNING: This tool imports and executes arbitrary Python "
+            "code from the input file provided with -i/--input_file.\n"
+            "Do not use this tool in automation or with untrusted input files. "
+            "Only use with trusted code and in a safe environment.",
+            formatter_class=argparse.RawDescriptionHelpFormatter,
         )
 
         self._parser.add_argument(
@@ -282,9 +284,12 @@ class CLI:
 
         if self._args.input_file is not None:
             input_file = self._args.input_file
-            print(f"WARNING: You are about to import and execute code from '{input_file}'. This can be dangerous.")
+            print(
+                f"WARNING: You are about to import and execute code from "
+                f"'{input_file}'. This can be dangerous."
+            )
             confirm = input("Type 'yes' to continue: ")
-            if confirm.strip().lower() != 'yes':
+            if confirm.strip().lower() != "yes":
                 print("Aborted.")
                 sys.exit(1)
             self._mod.load_file(self._args.input_file, self._args.module_name)
