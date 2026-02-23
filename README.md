@@ -1,3 +1,9 @@
+# SECURITY WARNING
+
+**Do not use this tool in automation or with untrusted input files.**
+
+This tool imports and executes arbitrary Python code from the input file provided with `-i/--input_file`. This can result in arbitrary code execution. Only use this tool with trusted code and in a safe environment. See the documentation and CLI help for more details.
+
 # ansible-specdoc
 
 A utility for dynamically generating documentation from an Ansible module's spec. 
