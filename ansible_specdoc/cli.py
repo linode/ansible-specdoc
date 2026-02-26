@@ -292,7 +292,7 @@ class CLI:
             input_file = self._args.input_file
             print(
                 f"WARNING: You are about to import and execute code from "
-                f"'{input_file}'. This can be dangerous.",
+                f"'{input_file}'. This can be dangerous if the file includes malicious code.",
                 file=sys.stderr,
             )
             if not self._args.yes:
