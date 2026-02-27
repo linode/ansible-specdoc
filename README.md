@@ -6,6 +6,13 @@ This project was primarily designed for the [Linode Ansible Collection](https://
 
 An example Ansible Collection using `ansible-specdoc` can be found [here](https://github.com/linode/ansible-specdoc-example).
 
+
+## Security Warning
+
+**Do not use this tool in automation or with untrusted input sources.**
+
+This tool imports and executes arbitrary Python code from the input file provided with -i/--input_file or from stdin via --stdin. Any input source can result in arbitrary code execution. Only use this tool with trusted code and in a safe environment.
+
 ## Usage
 
 ```sh

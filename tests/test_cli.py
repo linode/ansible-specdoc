@@ -2,11 +2,13 @@
 
 # pylint: disable=protected-access
 
+import io
 import json
 import os
 import unittest
 from types import SimpleNamespace
 from typing import Any, Dict
+from unittest import mock
 
 import yaml
 
@@ -187,3 +189,89 @@ class TestDocs(unittest.TestCase):
         assert 'DOCUMENTATION = r"""\n"""' in output
         assert 'EXAMPLES = r"""\n"""' in output
         assert 'RETURN = r"""\n"""' in output
+
+
+class TestCLIPrompt(unittest.TestCase):
+    """Tests for CLI confirmation prompt and non-interactive behaviors."""
+
+    def setUp(self):
+        """Set up test module path for CLI prompt tests."""
+        self.module_path = MODULE_1_DIR
+
+    def run_cli_with_args(self, args, input_value=None, isatty=True):
+        """Run CLI with given args, simulating input and TTY,
+        and capture stderr and exit behavior."""
+        # Patch sys.stdin, sys.stderr, sys.exit, and input as needed
+        with (
+            mock.patch("sys.argv", ["prog"] + args),
+            mock.patch("sys.stderr", new_callable=io.StringIO) as mock_stderr,
+            mock.patch("sys.exit") as mock_exit,
+        ):
+            if input_value is not None:
+                with (
+                    mock.patch("builtins.input", return_value=input_value),
+                    mock.patch("sys.stdin.isatty", return_value=isatty),
+                ):
+                    cli = CLI()
+                    cli.execute()
+            else:
+                with mock.patch("sys.stdin.isatty", return_value=isatty):
+                    cli = CLI()
+                    cli.execute()
+            return mock_stderr.getvalue(), mock_exit
+
+    def test_prompt_yes_proceeds(self):
+        """Prompt accepts 'yes' and proceeds without exit."""
+        stderr, mock_exit = self.run_cli_with_args(
+            ["-i", self.module_path, "-f", "json"],
+            input_value="yes",
+            isatty=True,
+        )
+        self.assertIn(
+            "WARNING: You are about to import and execute code", stderr
+        )
+        mock_exit.assert_not_called()
+
+    def test_prompt_no_aborts(self):
+        """Prompt rejects non-'yes' and exits with code 1."""
+        stderr, mock_exit = self.run_cli_with_args(
+            ["-i", self.module_path, "-f", "json"],
+            input_value="no",
+            isatty=True,
+        )
+        self.assertIn("Aborted.", stderr)
+        mock_exit.assert_called_once_with(1)
+
+    def test_prompt_eof_aborts(self):
+        """Prompt receives EOF and exits with code 1."""
+        with (
+            mock.patch(
+                "sys.argv", ["prog", "-i", self.module_path, "-f", "json"]
+            ),
+            mock.patch("sys.stderr", new_callable=io.StringIO) as mock_stderr,
+            mock.patch("sys.stdin.isatty", return_value=True),
+            mock.patch("builtins.input", side_effect=EOFError),
+            mock.patch("sys.exit") as mock_exit,
+        ):
+            cli = CLI()
+            cli.execute()
+            self.assertIn("Aborted: No input received.", mock_stderr.getvalue())
+            mock_exit.assert_called_once_with(1)
+
+    def test_noninteractive_without_yes_fails(self):
+        """Non-interactive run without --yes fails with error and exit code 1."""
+        stderr, mock_exit = self.run_cli_with_args(
+            ["-i", self.module_path, "-f", "json"], isatty=False
+        )
+        self.assertIn("ERROR: Interactive confirmation required", stderr)
+        mock_exit.assert_called_once_with(1)
+
+    def test_noninteractive_with_yes_succeeds(self):
+        """Non-interactive run with --yes proceeds without exit."""
+        stderr, mock_exit = self.run_cli_with_args(
+            ["-i", self.module_path, "-f", "json", "--yes"], isatty=False
+        )
+        self.assertIn(
+            "WARNING: You are about to import and execute code", stderr
+        )
+        mock_exit.assert_not_called()

@@ -131,7 +131,12 @@ class CLI:
 
     def __init__(self):
         self._parser = argparse.ArgumentParser(
-            description="Generate Ansible Module documentation from spec."
+            description="Generate Ansible Module documentation from spec.\n\n"
+            "SECURITY WARNING: This tool imports and executes arbitrary Python "
+            "code from the provided input source (either -i/--input_file or --stdin).\n"
+            "Do not use this tool in automation or with untrusted input sources. "
+            "Only use with trusted code and in a safe environment.",
+            formatter_class=argparse.RawDescriptionHelpFormatter,
         )
 
         self._parser.add_argument(
@@ -192,6 +197,12 @@ class CLI:
             default=False,
             const=True,
             nargs="?",
+        )
+
+        self._parser.add_argument(
+            "--yes",
+            help="Automatically confirm potentially dangerous actions.",
+            action="store_true",
         )
 
         self._args, _ = self._parser.parse_known_args()
@@ -278,6 +289,29 @@ class CLI:
             return
 
         if self._args.input_file is not None:
+            input_file = self._args.input_file
+            print(
+                f"WARNING: You are about to import and execute code from "
+                f"'{input_file}'. This can be dangerous if the file includes malicious code.",
+                file=sys.stderr,
+            )
+            if not self._args.yes:
+                if sys.stdin.isatty():
+                    try:
+                        confirm = input("Type 'yes' to continue: ")
+                        if confirm.strip().lower() != "yes":
+                            print("Aborted.", file=sys.stderr)
+                            sys.exit(1)
+                    except EOFError:
+                        print("Aborted: No input received.", file=sys.stderr)
+                        sys.exit(1)
+                else:
+                    print(
+                        "ERROR: Interactive confirmation required, but no TTY detected. "
+                        "Use --yes to acknowledge risk in automation.",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
             self._mod.load_file(self._args.input_file, self._args.module_name)
             return
 
