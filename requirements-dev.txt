@@ -1,5 +1,5 @@
 pytest>=8.4.2
-pylint>=2.15.5
+pylint>=4.0.6
 build>=1.5.1
 black>=26.5.1
 isort>=5.12.0
