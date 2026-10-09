@@ -1,6 +1,0 @@
-pytest>=8.4.2
-pylint>=4.0.7
-build>=1.6.1
-black>=26.5.1
-isort>=9.0.2
-autoflake>=2.4.0
