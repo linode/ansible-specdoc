@@ -1,3 +1,6 @@
+PYTHON ?= python3
+SPECDOC_VERSION ?= 0.0.0
+
 test:
 	pytest -s
 
@@ -19,10 +22,13 @@ lint:
 	black --check --verbose tests ansible_specdoc
 
 deps:
-	pip install -r requirements-dev.txt -r requirements.txt
+	$(PYTHON) -m pip install -e ".[dev]"
 
-build: deps
-	python -m build --sdist --wheel
+create-version:
+	@printf '"""The version of this ansible-specdoc package."""\n\n__version__ = "$(patsubst v%,%,$(or $(SPECDOC_VERSION),0.0.0))"\n' > ansible_specdoc/version.py
+
+build: deps create-version
+	$(PYTHON) -m build --sdist --wheel
 
 install: clean_dist build
 	pip3 install --force dist/*.whl
@@ -30,4 +36,4 @@ install: clean_dist build
 clean_dist:
 	rm -rf dist ansible_specdoc.egg-info build
 
-.PHONY: lint test build
+.PHONY: lint test build create-version

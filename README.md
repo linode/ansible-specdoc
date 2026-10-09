@@ -2,6 +2,8 @@
 
 A utility for dynamically generating documentation from an Ansible module's spec. 
 
+Requires Python 3.11 or newer.
+
 This project was primarily designed for the [Linode Ansible Collection](https://github.com/linode/ansible_linode).
 
 An example Ansible Collection using `ansible-specdoc` can be found [here](https://github.com/linode/ansible-specdoc-example).
@@ -153,3 +155,25 @@ Please refer to the [official Ansible deprecation documentation](https://docs.an
 ## Templates
 
 This repository provides an [example Markdown template](./template/module.md.j2) that can be used in conjunction with the `-t` argument.
+
+## Building
+
+Install runtime and development dependencies with:
+
+```shell
+python3 -m pip install -e ".[dev]"
+```
+
+Build a wheel and source distribution with:
+
+```shell
+make build
+```
+
+The build writes `ansible_specdoc/version.py`, which supplies the dynamic version declared in `pyproject.toml`. The version defaults to `0.0.0`. To build a release, set `SPECDOC_VERSION`:
+
+```shell
+make build SPECDOC_VERSION=v1.2.3
+```
+
+A leading `v` is removed. Direct builds with `python3 -m build` use the version already in `ansible_specdoc/version.py`; they do not read `SPECDOC_VERSION`.
