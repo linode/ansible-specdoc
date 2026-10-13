@@ -1,6 +1,6 @@
 pytest>=9.1.1
 pylint>=4.1.2
 build>=1.6.1
-black>=26.5.1
+black>=26.10.1
 isort>=9.0.2
 autoflake>=2.4.0
