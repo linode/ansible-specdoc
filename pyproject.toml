@@ -65,7 +65,7 @@ line_length = 80
 
 [tool.black]
 line-length = 80
-target-version = ["py311", "py312", "py313"]
+target-version = ["py311", "py312", "py313", "py314", "py315"]
 
 [tool.autoflake]
 expand-star-imports = false
