@@ -117,18 +117,6 @@ class TestDocs(unittest.TestCase):
 
         self.assert_docs_dict_valid(module_1.SPECDOC_META, output_json)
 
-    def test_docs_file_ansible(self):
-        """Test that the JSON output is valid"""
-        module = SpecDocModule()
-
-        module.load_file(MODULE_1_DIR)
-
-        output_json = json.loads(module.generate_json())
-
-        assert output_json.get("module") == "module_1"
-
-        self.assert_docs_dict_valid(module_1.SPECDOC_META, output_json)
-
     @staticmethod
     def test_docs_file_template():
         """Test that Jinja2 outputs are valid"""
@@ -189,6 +177,77 @@ class TestDocs(unittest.TestCase):
         assert 'DOCUMENTATION = r"""\n"""' in output
         assert 'EXAMPLES = r"""\n"""' in output
         assert 'RETURN = r"""\n"""' in output
+
+    def test_docs_injection_preserves_source(self):
+        """Only documentation values change, including with UTF-8 byte offsets."""
+        cli = CLI()
+        cli._args = SimpleNamespace(clear_injected_fields=False)
+        cli._mod = mock.Mock()
+        fields = {
+            "DOCUMENTATION": "description: caf\u00e9\n",
+            "RETURN": "path: C:\\docs\n",
+            "EXAMPLES": "- example: yes\n",
+        }
+        cli._mod.generate_ansible_doc_yaml.return_value = tuple(fields.values())
+        template = (
+            "# Module header\n"
+            "def helper():\n"
+            "    DOCUMENTATION = 'local docs'\n"
+            "    return DOCUMENTATION\n"
+            "\n"
+            "label = 'caf\u00e9'; DOCUMENTATION  = (\n"
+            "    <DOCUMENTATION>\n"
+            ")  # documentation comment\n"
+            "RETURN: str = <RETURN>  # return comment\n"
+            "EXAMPLES = <EXAMPLES>\n"
+            "\n"
+            "match label:\n"
+            "    case 'test':\n"
+            "        pass"
+        )
+
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=repr(newline)):
+                source = template.replace("\n", newline)
+                expected = source
+                for field, value in fields.items():
+                    source = source.replace(
+                        f"<{field}>", f'r"""old{newline}value"""'
+                    )
+                    expected = expected.replace(
+                        f"<{field}>", f'r"""\n{value}"""'
+                    )
+
+                output = cli._inject_docs(source)
+
+                self.assertEqual(output, expected)
+                self.assertEqual(cli._inject_docs(output), output)
+
+    def test_docs_injection_missing_fields(self):
+        """References and nested assignments do not replace module fields."""
+        cli = CLI()
+        cli._args = SimpleNamespace(clear_injected_fields=True)
+        fields = ("DOCUMENTATION", "RETURN", "EXAMPLES")
+
+        for missing in fields:
+            with self.subTest(missing=missing):
+                source = (
+                    "def helper():\n"
+                    f"    {missing} = ''\n"
+                    f"    return {missing}\n"
+                    f"holder.{missing} = ''\n"
+                    f"{missing}: str\n"
+                )
+                source += "\n".join(
+                    f"{field} = ''" for field in fields if field != missing
+                )
+
+                with self.assertRaisesRegex(
+                    Exception,
+                    "^failed to inject documentation: "
+                    f"an empty {missing} field must be specified$",
+                ):
+                    cli._inject_docs(source)
 
 
 class TestCLIPrompt(unittest.TestCase):
