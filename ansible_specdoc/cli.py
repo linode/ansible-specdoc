@@ -1,7 +1,6 @@
 """CLI Tool for generating Ansible collection documentation from module spec"""
 
 import argparse
-import importlib
 import importlib.machinery
 import importlib.util
 import json
@@ -26,7 +25,6 @@ class SpecDocModule:
     def __init__(self) -> None:
         self._module_file: Optional[str] = None
         self._module_name: str = ""
-        self._module_str: str = ""
 
         self._module_spec: Optional[importlib.machinery.ModuleSpec] = None
         self._module: Optional[ModuleType] = None
@@ -34,14 +32,14 @@ class SpecDocModule:
         self._metadata: Optional[SpecDocMeta] = None
 
     def load_file(self, file: str, module_name: str = None) -> None:
-        """Loads the given Ansible module file"""
+        """Loads an Ansible module file using Python's source encoding rules."""
 
         self._module_name = (
             module_name or os.path.splitext(os.path.basename(file))[0]
         )
         self._module_file = file
-        with open(file, "r") as module_file:
-            self._module_str = module_file.read()
+        if not pathlib.Path(file).is_file():
+            raise FileNotFoundError(f"Module file not found: {file}")
 
         self._module_spec = importlib.util.spec_from_file_location(
             self._module_name, self._module_file
@@ -67,7 +65,6 @@ class SpecDocModule:
             self._module_name, loader=None
         )
         self._module = importlib.util.module_from_spec(self._module_spec)
-        self._module_str = content
 
         exec(content, self._module.__dict__)
 
