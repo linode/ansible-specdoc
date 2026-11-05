@@ -1,6 +1,7 @@
 """CLI Tool for generating Ansible collection documentation from module spec"""
 
 import argparse
+import ast
 import importlib
 import importlib.machinery
 import importlib.util
@@ -13,7 +14,6 @@ from typing import Optional, Tuple
 
 import jinja2
 import yaml
-from redbaron import RedBaron
 
 from ansible_specdoc.objects import SpecDocMeta
 
@@ -211,32 +211,47 @@ class CLI:
         self._output = ""
 
     def _inject_docs(self, module_content: str) -> str:
-        """Injects docs_content into the DOCUMENTATION field of module_content"""
+        """Injects documentation into module-level documentation fields."""
 
         if self._args.clear_injected_fields:
-            doc, returns, examples = "", "", ""
+            docs = ("", "", "")
         else:
-            doc, returns, examples = self._mod.generate_ansible_doc_yaml()
+            docs = self._mod.generate_ansible_doc_yaml()
 
-        red = RedBaron(module_content)
+        to_inject = dict(zip(("DOCUMENTATION", "RETURN", "EXAMPLES"), docs))
 
-        to_inject = [
-            ["DOCUMENTATION", doc],
-            ["RETURN", returns],
-            ["EXAMPLES", examples],
-        ]
+        source = module_content.encode("utf-8")
+        line_offsets = [0]
+        for line in source.splitlines(keepends=True):
+            line_offsets.append(line_offsets[-1] + len(line))
 
-        for field_info in to_inject:
-            doc_field = red.find("name", value=field_info[0])
-            if doc_field is None or doc_field.parent is None:
-                raise Exception(
-                    "failed to inject documentation: "
-                    f"an empty {field_info[0]} field must be specified"
-                )
+        replacements = []
+        for node in ast.parse(module_content).body:
+            match node:
+                case ast.Assign(
+                    targets=[ast.Name(id=field)], value=value
+                ) | ast.AnnAssign(target=ast.Name(id=field), value=value) if (
+                    field in to_inject and value is not None
+                ):
+                    replacements.append(
+                        (
+                            line_offsets[value.lineno - 1] + value.col_offset,
+                            line_offsets[value.end_lineno - 1]
+                            + value.end_col_offset,
+                            f'r"""\n{to_inject.pop(field)}"""'.encode("utf-8"),
+                        )
+                    )
 
-            doc_field.parent.value.value = f'r"""\n{field_info[1]}"""'
+        if to_inject:
+            raise Exception(
+                "failed to inject documentation: "
+                f"an empty {next(iter(to_inject))} field must be specified"
+            )
 
-        return red.dumps()
+        for start, end, replacement in sorted(replacements, reverse=True):
+            source = source[:start] + replacement + source[end:]
+
+        return source.decode("utf-8")
 
     @staticmethod
     def _get_ansible_root(base_dir: str) -> Optional[str]:
