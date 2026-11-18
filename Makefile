@@ -31,9 +31,9 @@ build: deps create-version
 	$(PYTHON) -m build --sdist --wheel
 
 install: clean_dist build
-	pip3 install --force dist/*.whl
+	$(PYTHON) -m pip install --force-reinstall dist/*.whl
 
 clean_dist:
 	rm -rf dist ansible_specdoc.egg-info build
 
-.PHONY: lint test build create-version
+.PHONY: test black isort autoflake format lint deps create-version build install clean_dist
